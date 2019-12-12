@@ -1,9 +1,9 @@
-'use strict'
+"use strict";
 
 class AppController {
-    index () {
-        return 'Hello World'
-    }
+  index() {
+    return "Ok - User autenticated";
+  }
 }
 
-module.exports = AppController
+module.exports = AppController;

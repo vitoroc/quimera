@@ -35,8 +35,8 @@ class User extends Model {
     return this.hasMany("App/Models/Token");
   }
 
-  tweets() {
-    return this.hasMany("App/Models/Tweet");
+  userRoles() {
+    return this.hasMany("App/Models/UserRole");
   }
 }
 

@@ -3,10 +3,10 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use("Model");
 
-class Tweet extends Model {
-  user() {
-    return this.belongsTo("App/Models/User");
+class System extends Model {
+  roles() {
+    return this.hasMany("App/Models/Role");
   }
 }
 
-module.exports = Tweet;
+module.exports = System;
