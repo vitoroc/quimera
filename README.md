@@ -26,3 +26,11 @@ Run the following command to run startup migrations.
 ```js
 adonis migration:run
 ```
+
+### Database commands
+adonis migration:reset
+adonis migration:run
+adonis seed --files='UserSeeder.js'
+adonis seed --files='SystemSeeder.js'
+adonis seed --files='RoleSeeder.js'
+adonis seed --files='UserRoleSeeder.js'
