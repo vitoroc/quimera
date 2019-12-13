@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| UserSeeder
+| SystemSeeder
 |--------------------------------------------------------------------------
 |
 | Make use of the Factory instance to seed database with dummy data or
@@ -13,18 +13,17 @@
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use("Factory");
 
-const User = use("App/Models/User");
+const System = use("App/Models/System");
 
-class UserSeeder {
+class SystemSeeder {
   async run() {
-    await User.create({
+    await System.create({
       id: 1,
-      login: "admin",
-      name: "Administrador do Sistema",
-      email: "desenvolvimento@setc.se.gov.br",
-      password: "admsetc2019"
+      name: "API Quimera",
+      description: "API de autenticação para os sistemas da SETC",
+      active: true
     });
   }
 }
 
-module.exports = UserSeeder;
+module.exports = SystemSeeder;

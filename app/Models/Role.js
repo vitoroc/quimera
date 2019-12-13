@@ -4,7 +4,7 @@
 const Model = use("Model");
 
 class Role extends Model {
-  system() {
+  systems() {
     this.belongsTo("App/Models/System");
   }
 

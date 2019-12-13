@@ -22,6 +22,13 @@ class User extends Model {
   }
 
   /**
+   * Hide/Omit Fields From JSON Output
+  //  */
+  static get hidden() {
+    return ["password"];
+  }
+
+  /**
    * A relationship on tokens is required for auth to
    * work. Since features like `refreshTokens` or
    * `rememberToken` will be saved inside the
@@ -35,8 +42,10 @@ class User extends Model {
     return this.hasMany("App/Models/Token");
   }
 
-  userRoles() {
-    return this.hasMany("App/Models/UserRole");
+  roles() {
+    return this.belongsToMany("App/Models/Role").pivotModel(
+      "App/Models/UserRole"
+    );
   }
 }
 

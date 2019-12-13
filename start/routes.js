@@ -20,7 +20,7 @@ Route.get("/", () => {
   return { greeting: "Quimera running" };
 });
 
-Route.post("/register", "AuthController.register");
+// Route.post("/register", "AuthController.register");
 Route.post("/autenticate", "AuthController.autenticate");
 Route.get("/app", "AppController.index").middleware(["auth"]);
 

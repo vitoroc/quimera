@@ -4,12 +4,12 @@
 const Model = use("Model");
 
 class UserRole extends Model {
-  system() {
-    this.belongsTo("App/Models/Role");
+  role() {
+    return this.belongsTo("App/Models/Role");
   }
 
   user() {
-    this.belongsTo("App/Model/User");
+    return this.belongsTo("App/Model/User");
   }
 }
 

@@ -2,7 +2,7 @@
 
 class AppController {
   index() {
-    return "Ok - User autenticated";
+    return { message: "Ok - User autenticated" };
   }
 }
 
