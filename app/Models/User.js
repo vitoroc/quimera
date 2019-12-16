@@ -47,6 +47,10 @@ class User extends Model {
       "App/Models/UserRole"
     );
   }
+
+  orgao() {
+    return this.belongsTo("App/Models/Orgao");
+  }
 }
 
 module.exports = User;

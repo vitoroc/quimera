@@ -21,7 +21,8 @@ class SystemSeeder {
       id: 1,
       name: "API Quimera",
       description: "API de autenticação para os sistemas da SETC",
-      active: true
+      active: true,
+      url: "172.22.21.120" + Env.get("APP_NAME", "AdonisJs")
     });
   }
 }

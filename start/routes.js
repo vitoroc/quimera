@@ -26,4 +26,5 @@ Route.get("/app", "AppController.index").middleware(["auth"]);
 
 Route.group(() => {
   Route.resource("users", "UserController").apiOnly();
+  // Route.resource("systems", "SystemController").apiOnly();
 }).middleware(["auth"]);

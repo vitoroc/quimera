@@ -19,7 +19,8 @@ class UserRoleSeeder {
   async run() {
     await UserRole.create({
       user_id: 1,
-      role_id: 1
+      role_id: 1,
+      active: true
     });
   }
 }
