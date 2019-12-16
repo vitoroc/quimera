@@ -8,6 +8,11 @@ class UserSchema extends Schema {
     this.create("users", table => {
       table.increments();
       table
+        .integer("orgao_codigo")
+        .notNullable()
+        .references("codigo")
+        .inTable("orgaos");
+      table
         .string("login", 80)
         .notNullable()
         .unique();

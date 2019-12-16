@@ -30,15 +30,6 @@ class OrgaoSchema extends Schema {
       table.boolean("ativo").notNullable();
       table.timestamps();
     });
-
-    // this.alter("users", table => {
-    //   table
-    //     .integer("orgao_codigo")
-    //     .notNullable()
-    //     .references("codigo")
-    //     .inTable("orgaos")
-    //     .onDelete("SET NULL");
-    // });
   }
 
   down() {

@@ -58,7 +58,16 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response }) {}
+  async store({ request, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+
+    if (!allowed) return { message: "User not allowed" };
+
+    const { email, password } = request.all();
+    const data = request.only(["email", "password", "login", "name"]);
+    const user = await User.create(data);
+    return { message: "User created successfully", user };
+  }
 
   /**
    * Display a single user.
@@ -86,7 +95,20 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ request, auth }) {
+    const user = await User.find(auth.user.id);
+    const data = request.only(["email", "password", "login", "name"]);
+    // console.log(user.toJSON());
+    // console.log(data);
+    user.name = data.name;
+    user.password = data.password;
+    user.email = data.email;
+    user.login = data.login;
+    
+    // console.log(user.toJSON());
+    user.save();
+    return user;
+  }
 
   /**
    * Delete a user with id.
@@ -96,9 +118,13 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {
+  async destroy({ params, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    if (!allowed) return { message: "User not allowed" };
+
     const user = await User.find(params.id);
     if (!user) return { message: "User not found" };
+    if (user.id === 1) return { message: "Admin cannot be deleted" };
 
     await user.delete();
     return { message: "Usuario deletado com sucesso" };
