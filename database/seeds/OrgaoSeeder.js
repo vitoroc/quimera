@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| UserSeeder
+| OrgaoSeeder
 |--------------------------------------------------------------------------
 |
 | Make use of the Factory instance to seed database with dummy data or
@@ -13,19 +13,19 @@
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use("Factory");
 
-const User = use("App/Models/User");
+const Orgao = use("App/Models/Orgao");
 
-class UserSeeder {
+class OrgaoSeeder {
   async run() {
-    await User.create({
-      id: 1,
-      orgao_codigo: 36000,
-      login: "admin",
-      name: "Administrador do Sistema",
-      email: "desenvolvimento@setc.se.gov.br",
-      password: "admsetc2019"
+    await Orgao.create({
+      codigo: 36000,
+      cnpj: "13.128.798/0009-50",
+      sigla: "SETC",
+      descricao: "Secretaria de Estado de Transparência e Controle",
+      natureza: "Administração Direta",
+      ativo: true
     });
   }
 }
 
-module.exports = UserSeeder;
+module.exports = OrgaoSeeder;

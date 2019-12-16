@@ -17,8 +17,7 @@ class UserController {
    * GET users
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
+   * @param {Auth} ctx.auth
    */
   async userIsAdmin({ auth }) {
     var allowed = false;
@@ -56,7 +55,7 @@ class UserController {
    *
    * @param {object} ctx
    * @param {Request} ctx.request
-   * @param {Response} ctx.response
+   * @param {Auth} ctx.auth
    */
   async store({ request, auth }) {
     var allowed = await this.userIsAdmin({ auth });
@@ -64,7 +63,13 @@ class UserController {
     if (!allowed) return { message: "User not allowed" };
 
     const { email, password } = request.all();
-    const data = request.only(["email", "password", "login", "name"]);
+    const data = request.only([
+      "email",
+      "password",
+      "login",
+      "name",
+      "orgao_codigo"
+    ]);
     const user = await User.create(data);
     return { message: "User created successfully", user };
   }
@@ -90,6 +95,8 @@ class UserController {
   /**
    * Update user details.
    * PUT or PATCH user/:id
+   * The user can only update his own atributes
+   * Email, password, login and name
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -97,26 +104,28 @@ class UserController {
    */
   async update({ request, auth }) {
     const user = await User.find(auth.user.id);
-    const data = request.only(["email", "password", "login", "name"]);
+    const { email, password, login, name } = request.all();
+    console.log(email, password, login, name);
     // console.log(user.toJSON());
     // console.log(data);
-    user.name = data.name;
-    user.password = data.password;
-    user.email = data.email;
-    user.login = data.login;
-    
+    if (email) user.email = email;
+    if (password) user.password = password;
+    if (login) user.login = login;
+    if (name) user.name = name;
+
     // console.log(user.toJSON());
-    user.save();
-    return user;
+    // user.save();
+    // return user;
   }
 
   /**
    * Delete a user with id.
    * DELETE user/:id
+   * Only if the user autenticated have a admin role
    *
    * @param {object} ctx
    * @param {Request} ctx.request
-   * @param {Response} ctx.response
+   * @param {Params} ctx.params
    */
   async destroy({ params, auth }) {
     var allowed = await this.userIsAdmin({ auth });

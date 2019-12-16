@@ -18,7 +18,6 @@ adonis new yardstick --api-only
 
 or manually clone the repo and then run `npm install`.
 
-
 ### Migrations
 
 Run the following command to run startup migrations.
@@ -28,8 +27,10 @@ adonis migration:run
 ```
 
 ### Database commands
+
 adonis migration:reset
 adonis migration:run
+adonis seed --files='OrgaoSeeder.js'
 adonis seed --files='UserSeeder.js'
 adonis seed --files='SystemSeeder.js'
 adonis seed --files='RoleSeeder.js'

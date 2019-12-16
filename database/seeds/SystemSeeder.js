@@ -14,6 +14,7 @@
 const Factory = use("Factory");
 
 const System = use("App/Models/System");
+const Env = use("Env");
 
 class SystemSeeder {
   async run() {
@@ -22,7 +23,7 @@ class SystemSeeder {
       name: "API Quimera",
       description: "API de autenticação para os sistemas da SETC",
       active: true,
-      url: "172.22.21.120" + Env.get("APP_NAME", "AdonisJs")
+      url: Env.get("HOST") + ":" + Env.get("PORT")
     });
   }
 }
