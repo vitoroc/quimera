@@ -1,13 +1,45 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const UserController = require("./UserController");
+const User = use("App/Models/User");
+const System = use("App/Models/System");
+const Orgao = use("App/Models/Orgao");
+
 /**
  * Resourceful controller for interacting with orgaos
  */
 class OrgaoController {
+  /**
+   * Return if user have a admin role.
+   *
+   * @param {object} ctx
+   * @param {Auth} ctx.auth
+   */
+  async userIsAdmin({ auth }) {
+    var allowed = false;
+
+    const system = await System.find(1);
+    const role_admin_system = await system
+      .roles()
+      .where("name", "admin")
+      .fetch();
+
+    const user = await User.find(auth.user.id);
+    const user_roles = await user.roles().fetch();
+
+    user_roles["rows"].forEach(el => {
+      if (el.toJSON().id === role_admin_system["rows"][0].id) {
+        allowed = true;
+      }
+    });
+
+    return allowed;
+  }
+
   /**
    * Show a list of all orgaos.
    * GET orgaos
@@ -17,19 +49,12 @@ class OrgaoController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ auth }) {
+    const allowed = await this.userIsAdmin({ auth });
+    if (!allowed) return { message: "User not allowed" };
 
-  /**
-   * Render a form to be used for creating a new orgao.
-   * GET orgaos/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    const orgaos = await Orgao.all();
+    return orgaos;
   }
 
   /**
@@ -40,7 +65,21 @@ class OrgaoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, auth }) {
+    const allowed = await this.userIsAdmin({ auth });
+    if (!allowed) return { message: "User not allowed" };
+
+    const data = request.only([
+      "codigo",
+      "cnpj",
+      "sigla",
+      "descricao",
+      "natureza",
+      "ativo"
+    ]);
+
+    const orgao = await Orgao.create(data);
+    return { message: "Orgao created successfully", orgao };
   }
 
   /**
@@ -52,19 +91,20 @@ class OrgaoController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params, auth }) {
+    const allowed = await this.userIsAdmin({ auth });
+    if (!allowed) return { message: "User not allowed" };
 
-  /**
-   * Render a form to update an existing orgao.
-   * GET orgaos/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+    const qntOrgao = await Orgao.query()
+      .where("codigo", "=", params.codigo)
+      .getCount();
+
+    if (qntOrgao === 0) return { message: "Orgao not found" };
+
+    const orgao = await Orgao.query()
+      .where("codigo", "=", params.codigo)
+      .fetch();
+    return orgao;
   }
 
   /**
@@ -75,7 +115,42 @@ class OrgaoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, auth }) {
+    // return {
+    //   message: "data",
+    //   name: auth.user.name,
+    //   cod: params.codigo,
+    // //   req: request.all()
+    // // };
+    // const data = request.only([
+    //   "codigo",
+    //   "sigla",
+    //   "cnpj",
+    //   "natureza",
+    //   "ativo",
+    //   "descricao"
+    // ]);
+
+    // const orgaoAux = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .fetch();
+
+    // console.log(orgaoAux.rows);
+
+    // const orgao = await Orgao.find(orgaoAux.id);
+
+    // // orgao.codigo = data.codigo;
+    // // orgao.sigla = data.sigla;
+    // // orgao.cnpj = data.cnpj;
+    // // orgao.descricao = data.descricao;
+    // // orgao.ativo = data.ativo;
+
+    // // orgao.save();
+
+    // console.log(orgao);
+    // return orgao;
+
+    return data;
   }
 
   /**
@@ -86,8 +161,7 @@ class OrgaoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = OrgaoController
+module.exports = OrgaoController;

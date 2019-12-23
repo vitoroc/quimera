@@ -13,8 +13,7 @@ const Database = use("Database");
  */
 class UserController {
   /**
-   * Show a list of all users.
-   * GET users
+   * Return if user have a admin role.
    *
    * @param {object} ctx
    * @param {Auth} ctx.auth
@@ -40,6 +39,13 @@ class UserController {
     return allowed;
   }
 
+  /**
+   * Show a list of all users.
+   * GET users
+   *
+   * @param {object} ctx
+   * @param {Auth} ctx.auth
+   */
   async index({ auth }) {
     var allowed = await this.userIsAdmin({ auth });
 
