@@ -22,6 +22,7 @@ class UserSchema extends Schema {
         .notNullable()
         .unique();
       table.string("password", 60).notNullable();
+      table.boolean("valid").default(true);
       table.timestamps();
     });
   }
