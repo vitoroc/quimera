@@ -26,12 +26,15 @@ Route.get("/app", "AppController.index").middleware(["auth"]);
 
 Route.group(() => {
   Route.resource("users", "UserController").apiOnly();
-  Route.resource("orgaos", "OrgaoController")
-    .apiOnly()
-    .except("show")
-    .except("update");
+  // Route.resource("orgaos", "OrgaoController")
+  //   .apiOnly()
+  //   .except("show")
+  //   .except("update");
+  Route.get("orgaos", "OrgaoController.index");
   Route.get("orgaos/:codigo", "OrgaoController.show");
+  Route.post("orgaos", "OrgaoController.store");
   Route.put("orgaos/:codigo", "OrgaoController.update");
+  Route.delete("orgaos/:codigo", "OrgaoController.destroy");
   // Route.resource("systems", "SystemController").apiOnly();
 }).middleware(["auth"]);
 

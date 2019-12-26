@@ -122,7 +122,7 @@ class UserController {
     //return user;
 
     // console.log(user.toJSON());
-    user.save();
+    await user.save();
     return user;
   }
 
@@ -147,7 +147,7 @@ class UserController {
 
     await user.save();
     console.log(user);
-    return { message: "Usuario invalidado com sucesso" };
+    return { message: "Usuario invalidated successfully" };
   }
 }
 
