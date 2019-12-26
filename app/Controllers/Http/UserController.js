@@ -119,9 +119,11 @@ class UserController {
     if (login) user.login = login;
     if (name) user.name = name;
 
+    //return user;
+
     // console.log(user.toJSON());
-    // user.save();
-    // return user;
+    user.save();
+    return user;
   }
 
   /**
@@ -139,10 +141,13 @@ class UserController {
 
     const user = await User.find(params.id);
     if (!user) return { message: "User not found" };
-    if (user.id === 1) return { message: "Admin cannot be deleted" };
+    if (user.id === 1) return { message: "Admin cannot be invalidated" };
 
-    await user.delete();
-    return { message: "Usuario deletado com sucesso" };
+    user.valid = false;
+
+    await user.save();
+    console.log(user);
+    return { message: "Usuario invalidado com sucesso" };
   }
 }
 
