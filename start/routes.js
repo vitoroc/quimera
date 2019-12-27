@@ -36,6 +36,10 @@ Route.group(() => {
   Route.put("orgaos/:codigo", "OrgaoController.update");
   Route.delete("orgaos/:codigo", "OrgaoController.destroy");
   // Route.resource("systems", "SystemController").apiOnly();
+
+  Route.get("user-info", "UserController.userRoles");
+
+  Route.get("systems", "SystemController.index");
 }).middleware(["auth"]);
 
 Route.get("/test", "OrgaoController.index").middleware(["auth"]);

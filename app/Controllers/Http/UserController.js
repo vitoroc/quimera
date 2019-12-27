@@ -149,6 +149,17 @@ class UserController {
     console.log(user);
     return { message: "Usuario invalidated successfully" };
   }
+
+  /**
+   * Return user's roles.
+   *
+   */
+  async userRoles({ auth }) {
+    const user = await User.find(auth.user.id);
+    if (!user) return { message: "User not found" };
+
+    return user.roles().fetch();
+  }
 }
 
 module.exports = UserController;
