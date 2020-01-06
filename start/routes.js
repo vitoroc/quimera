@@ -14,15 +14,16 @@
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
+/** @typedef {import('@adonisjs/framework/src/Response')} Response */
 const Route = use("Route");
 
-Route.get("/", () => {
-  return { greeting: "Quimera running" };
+Route.get("/", async ({ response }) => {
+  response.send({ greeting: "Quimera running" });
 });
 
 // Route.post("/register", "AuthController.register");
 Route.post("/autenticate", "AuthController.autenticate");
-Route.get("/app", "AppController.index").middleware(["auth"]);
+// Route.get("/app", "AppController.index").middleware(["auth"]);
 
 Route.group(() => {
   Route.resource("users", "UserController").apiOnly();
@@ -39,7 +40,8 @@ Route.group(() => {
 
   Route.get("user-info", "UserController.userRoles");
 
-  Route.get("systems", "SystemController.index");
+  // Route.get("systems", "SystemController.index");
+  Route.resource("systems", "SystemController").apiOnly();
 }).middleware(["auth"]);
 
 Route.get("/test", "OrgaoController.index").middleware(["auth"]);

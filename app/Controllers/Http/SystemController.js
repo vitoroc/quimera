@@ -40,24 +40,15 @@ class SystemController {
    * @param {object} ctx
    * @param {Auth} ctx.auth
    */
-  async index({ auth }) {
+  async index({ auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
-
-    const systems = System.all();
-    return systems;
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const systems = await System.all();
+      response.send({ systems });
+    }
   }
-
-  /**
-   * Render a form to be used for creating a new system.
-   * GET systems/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create({ request, response, view }) {}
 
   /**
    * Create/save a new system.
@@ -67,7 +58,22 @@ class SystemController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response }) {}
+  async store({ request, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const data = request.only(["name", "description", "active", "url"]);
+      const system = await System.create(data);
+
+      response.send({ message: "System created successfully", system });
+    }
+
+    // const data = request.only(["name", "description", "active", "url"]);
+    // const system = await System.create(data);
+
+    // return { message: "System created successfully", system };
+  }
 
   /**
    * Display a single system.
@@ -78,18 +84,22 @@ class SystemController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ params, request, response, view }) {}
+  async show({ params, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const system = await System.find(params.id);
+      if (!system) response.status(404).send({ message: "System not found" });
+      else response.send({ system });
+    }
 
-  /**
-   * Render a form to update an existing system.
-   * GET systems/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit({ params, request, response, view }) {}
+    // const system = await System.find(params.id);
+    // if (!system) return { message: "System not found" };
+
+    // return system;
+
+    // response.status(403).send("oie");
+  }
 
   /**
    * Update system details.
@@ -99,7 +109,22 @@ class SystemController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const system = await System.find(params.id);
+      if (!system) response.status(404).send({ message: "System not found" });
+      const { name, description, active, url } = request.all();
+      if (name) system.name = name;
+      if (description) system.description = description;
+      if (active) system.active = active;
+      if (url) system.url = url;
+
+      await system.save();
+      response.send({ message: "System updated successfully", system });
+    }
+  }
 
   /**
    * Delete a system with id.
@@ -109,7 +134,20 @@ class SystemController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {}
+  async destroy({ params, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      if (params.id == 1)
+        response.status(403).send({ message: "Main system cannot be deleted" });
+      else {
+        const system = await System.find(params.id);
+        system.active = false;
+        await system.save();
+        response.send({ message: "System invalidated successfully", system });
+      }
+    }
+  }
 }
 
 module.exports = SystemController;

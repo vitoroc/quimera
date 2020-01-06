@@ -46,13 +46,15 @@ class UserController {
    * @param {object} ctx
    * @param {Auth} ctx.auth
    */
-  async index({ auth }) {
+  async index({ auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
-
-    if (!allowed) return { message: "User not allowed" };
-
     const users = await User.all();
-    return users;
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else response.send({ users });
+
+    // const users = await User.all();
+    // return users;
   }
 
   /**
@@ -63,12 +65,9 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Auth} ctx.auth
    */
-  async store({ request, auth }) {
+  async store({ request, auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
 
-    if (!allowed) return { message: "User not allowed" };
-
-    const { email, password } = request.all();
     const data = request.only([
       "email",
       "password",
@@ -76,8 +75,12 @@ class UserController {
       "name",
       "orgao_codigo"
     ]);
-    const user = await User.create(data);
-    return { message: "User created successfully", user };
+
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const user = await User.create(data);
+      response.send({ message: "User created successfully", user });
+    }
   }
 
   /**
@@ -88,14 +91,18 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async show({ params, auth }) {
+  async show({ params, auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
-
+    // if (!allowed) return { message: "User not allowed" };
     const user = await User.find(params.id);
-    if (!user) return { message: "User not found" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else if (!user) response.status(404).send({ message: "User not found" });
+    else response.send({ user });
 
-    return user;
+    // const user = await User.find(params.id);
+    // if (!user) return { message: "User not found" };
+
+    // return user;
   }
 
   /**
@@ -110,20 +117,23 @@ class UserController {
    */
   async update({ request, auth }) {
     const user = await User.find(auth.user.id);
-    const { email, password, login, name } = request.all();
-    console.log(email, password, login, name);
-    // console.log(user.toJSON());
-    // console.log(data);
-    if (email) user.email = email;
-    if (password) user.password = password;
-    if (login) user.login = login;
-    if (name) user.name = name;
+    if (!user) response.status(404).send({ message: "User not found" });
+    else {
+      const { email, password, login, name } = request.all();
+      console.log(email, password, login, name);
+      // console.log(user.toJSON());
+      // console.log(data);
+      if (email) user.email = email;
+      if (password) user.password = password;
+      if (login) user.login = login;
+      if (name) user.name = name;
 
-    //return user;
+      //return user;
 
-    // console.log(user.toJSON());
-    await user.save();
-    return user;
+      // console.log(user.toJSON());
+      await user.save();
+      response.send({ user });
+    }
   }
 
   /**
@@ -135,19 +145,37 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Params} ctx.params
    */
-  async destroy({ params, auth }) {
+  async destroy({ params, auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else {
+      const user = await User.find(params.id);
+      if (!user) response.status(404).send({ message: "User not found" });
+      else if (user.id === 1)
+        response.status(403).send({ message: "Admin cannot be invalidated" });
+      else {
+        if (user.valid == false)
+          response.send({ message: "User already invalidated" });
+        else {
+          user.valid = false;
 
-    const user = await User.find(params.id);
-    if (!user) return { message: "User not found" };
-    if (user.id === 1) return { message: "Admin cannot be invalidated" };
+          await user.save();
+          console.log(user);
+          response.send({ message: "Usuario invalidated successfully" });
+        }
+      }
+    }
 
-    user.valid = false;
+    // const user = await User.find(params.id);
+    // if (!user) return { message: "User not found" };
+    // if (user.id === 1) return { message: "Admin cannot be invalidated" };
 
-    await user.save();
-    console.log(user);
-    return { message: "Usuario invalidated successfully" };
+    // user.valid = false;
+
+    // await user.save();
+    // console.log(user);
+    // return { message: "Usuario invalidated successfully" };
   }
 
   /**
@@ -156,9 +184,14 @@ class UserController {
    */
   async userRoles({ auth }) {
     const user = await User.find(auth.user.id);
-    if (!user) return { message: "User not found" };
+    // if (!user) return { message: "User not found" };
+    if (!user) response.status(404).send({ message: "User not found" });
+    else {
+      const user = await user.roles().fetch();
+      response.send(user);
+    }
 
-    return user.roles().fetch();
+    // return user.roles().fetch();
   }
 }
 

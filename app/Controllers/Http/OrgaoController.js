@@ -49,12 +49,14 @@ class OrgaoController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ auth }) {
+  async index({ auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
-
     const orgaos = await Orgao.all();
-    return orgaos;
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.status(403).send({ message: "User not allowed" });
+    else response.send(orgaos);
+    // const orgaos = await Orgao.all();
+    // return orgaos;
   }
 
   /**
@@ -65,21 +67,34 @@ class OrgaoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, auth }) {
+  async store({ request, auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else {
+      const data = request.only([
+        "codigo",
+        "cnpj",
+        "sigla",
+        "descricao",
+        "natureza",
+        "ativo"
+      ]);
 
-    const data = request.only([
-      "codigo",
-      "cnpj",
-      "sigla",
-      "descricao",
-      "natureza",
-      "ativo"
-    ]);
+      const orgao = await Orgao.create(data);
+      response.send({ message: "Orgao created successfully", orgao });
+    }
+    // const data = request.only([
+    //   "codigo",
+    //   "cnpj",
+    //   "sigla",
+    //   "descricao",
+    //   "natureza",
+    //   "ativo"
+    // ]);
 
-    const orgao = await Orgao.create(data);
-    return { message: "Orgao created successfully", orgao };
+    // const orgao = await Orgao.create(data);
+    // return { message: "Orgao created successfully", orgao };
   }
 
   /**
@@ -91,20 +106,34 @@ class OrgaoController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ params, auth }) {
+  async show({ params, auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else {
+      const qntOrgao = await Orgao.query()
+        .where("codigo", "=", params.codigo)
+        .getCount();
 
-    const qntOrgao = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .getCount();
+      if (qntOrgao === 0)
+        response.status(404).send({ message: "Orgao not found" });
+      else {
+        const orgao = await Orgao.query()
+          .where("codigo", "=", params.codigo)
+          .fetch();
+        response.send({ orgao });
+      }
+    }
+    // const qntOrgao = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .getCount();
 
-    if (qntOrgao === 0) return { message: "Orgao not found" };
+    // if (qntOrgao === 0) return { message: "Orgao not found" };
 
-    const orgao = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .fetch();
-    return orgao;
+    // const orgao = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .fetch();
+    // return orgao;
   }
 
   /**
@@ -115,35 +144,71 @@ class OrgaoController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, auth }) {
+  async update({ params, request, auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else {
+      const {
+        codigo,
+        sigla,
+        cnpj,
+        natureza,
+        ativo,
+        descricao
+      } = await request.all();
 
-    const { codigo, sigla, cnpj, natureza, ativo, descricao } = request.all();
+      const countOrg = await Orgao.query()
+        .where("codigo", "=", params.codigo)
+        .getCount();
 
-    const countOrg = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .getCount();
+      // if (countOrg === 0) return { message: "Orgao not found" };
+      if (countOrg === 0)
+        response.status(404).send({ message: "Orgao not found" });
+      else {
+        const orgaoAux = await Orgao.query()
+          .where("codigo", "=", params.codigo)
+          .fetch();
 
-    if (countOrg === 0) return { message: "Orgao not found" };
+        const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
 
-    const orgaoAux = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .fetch();
+        if (codigo) orgao.codigo = codigo;
+        if (sigla) orgao.sigla = sigla;
+        if (cnpj) orgao.cnpj = cnpj;
+        if (natureza) orgao.natureza = natureza;
+        if (ativo) orgao.ativo = ativo;
+        if (descricao) orgao.descricao = descricao;
 
-    console.log(orgaoAux.toJSON()[0].id);
+        await orgao.save();
+        response.send({ message: "Orgao updated successfully", orgao });
+      }
+    }
 
-    const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
+    // const { codigo, sigla, cnpj, natureza, ativo, descricao } = request.all();
 
-    if (codigo) orgao.codigo = codigo;
-    if (sigla) orgao.sigla = sigla;
-    if (cnpj) orgao.cnpj = cnpj;
-    if (natureza) orgao.natureza = natureza;
-    if (ativo) orgao.ativo = ativo;
-    if (descricao) orgao.descricao = descricao;
+    // const countOrg = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .getCount();
 
-    await orgao.save();
-    return orgao;
+    // if (countOrg === 0) return { message: "Orgao not found" };
+
+    // const orgaoAux = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .fetch();
+
+    // console.log(orgaoAux.toJSON()[0].id);
+
+    // const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
+
+    // if (codigo) orgao.codigo = codigo;
+    // if (sigla) orgao.sigla = sigla;
+    // if (cnpj) orgao.cnpj = cnpj;
+    // if (natureza) orgao.natureza = natureza;
+    // if (ativo) orgao.ativo = ativo;
+    // if (descricao) orgao.descricao = descricao;
+
+    // await orgao.save();
+    // return orgao;
   }
 
   /**
@@ -153,26 +218,46 @@ class OrgaoController {
    * @param {object} ctx
    * @param {Request} ctx.request
    */
-  async destroy({ params, auth }) {
+  async destroy({ params, auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
-    if (!allowed) return { message: "User not allowed" };
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else {
+      const countOrg = await Orgao.query()
+        .where("codigo", "=", params.codigo)
+        .getCount();
 
-    const countOrg = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .getCount();
+      if (countOrg === 0)
+        response.status(404).send({ message: "Orgao not found" });
+      else {
+        const orgaoAux = await Orgao.query()
+          .where("codigo", "=", params.codigo)
+          .fetch();
 
-    if (countOrg === 0) return { message: "Orgao not found" };
+        const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
 
-    const orgaoAux = await Orgao.query()
-      .where("codigo", "=", params.codigo)
-      .fetch();
+        orgao.ativo = false;
+        await orgao.save();
 
-    const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
+        response.send({ message: "Orgao invalidated successfully" });
+      }
+    }
+    // const countOrg = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .getCount();
 
-    orgao.ativo = false;
-    await orgao.save();
+    // if (countOrg === 0) return { message: "Orgao not found" };
 
-    return { message: "Orgao invalidated successfully" };
+    // const orgaoAux = await Orgao.query()
+    //   .where("codigo", "=", params.codigo)
+    //   .fetch();
+
+    // const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
+
+    // orgao.ativo = false;
+    // await orgao.save();
+
+    // return { message: "Orgao invalidated successfully" };
   }
 }
 
