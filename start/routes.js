@@ -18,7 +18,7 @@
 const Route = use("Route");
 
 Route.get("/", async ({ response }) => {
-  response.send({ greeting: "Quimera running" });
+  response.send({ greeting: "Quimera running ..." });
 });
 
 // Route.post("/register", "AuthController.register");
