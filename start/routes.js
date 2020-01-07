@@ -38,10 +38,11 @@ Route.group(() => {
   Route.delete("orgaos/:codigo", "OrgaoController.destroy");
   // Route.resource("systems", "SystemController").apiOnly();
 
-  Route.get("user-info", "UserController.userRoles");
-
-  // Route.get("systems", "SystemController.index");
   Route.resource("systems", "SystemController").apiOnly();
+  Route.resource("roles", "RoleController").apiOnly();
+
+  Route.get("user-info", "UserController.userRoles");
+  Route.get("system-roles/:id", "SystemController.systemRoles");
 }).middleware(["auth"]);
 
 Route.get("/test", "OrgaoController.index").middleware(["auth"]);

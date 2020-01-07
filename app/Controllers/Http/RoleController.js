@@ -1,13 +1,38 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const System = use("App/Models/System");
+const User = use("App/Models/User");
+const Role = use("App/Models/Role");
+
 /**
  * Resourceful controller for interacting with roles
  */
 class RoleController {
+  async userIsAdmin({ auth }) {
+    var allowed = false;
+
+    const system = await System.find(1);
+    const role_admin_system = await system
+      .roles()
+      .where("name", "admin")
+      .fetch();
+
+    const user = await User.find(auth.user.id);
+    const user_roles = await user.roles().fetch();
+
+    user_roles["rows"].forEach(el => {
+      if (el.toJSON().id === role_admin_system["rows"][0].id) {
+        allowed = true;
+      }
+    });
+
+    return allowed;
+  }
+
   /**
    * Show a list of all roles.
    * GET roles
@@ -17,19 +42,14 @@ class RoleController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new role.
-   * GET roles/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index({ response, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const roles = await Role.all();
+      response.send({ roles });
+    }
   }
 
   /**
@@ -39,8 +59,18 @@ class RoleController {
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
+   * @param {Auth} ctx.auth
    */
-  async store ({ request, response }) {
+  async store({ request, response, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const data = request.only(["system_id", "name", "description", "active"]);
+      const role = await Role.create(data);
+
+      response.send({ message: "Role created successfully", role });
+    }
   }
 
   /**
@@ -52,19 +82,16 @@ class RoleController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params, request, response, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const data = request.only(["system_id", "name", "description", "active"]);
+      const role = await Role.create(data);
 
-  /**
-   * Render a form to update an existing role.
-   * GET roles/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+      response.send({ message: "Role created successfully", role });
+    }
   }
 
   /**
@@ -75,7 +102,22 @@ class RoleController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const { name, description, active } = request.all();
+      const role = await Role.find(params.id);
+
+      if (typeof name !== "undefined") role.name = name;
+      if (typeof description !== "undefined") role.description = name;
+      if (typeof active !== "undefined") role.active = name;
+
+      await role.save();
+
+      response.send({ message: "Role updated successfully", role });
+    }
   }
 
   /**
@@ -86,8 +128,20 @@ class RoleController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, response, auth }) {
+    var allowed = await this.userIsAdmin({ auth });
+    // if (!allowed) return { message: "User not allowed" };
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const role = await Role.find(params.id);
+      if (!role) response.status(404).send({ message: "System not found" });
+      else {
+        role.active = false;
+        await role.delete();
+        response.send({ message: "Role deleted successfully" });
+      }
+    }
   }
 }
 
-module.exports = RoleController
+module.exports = RoleController;

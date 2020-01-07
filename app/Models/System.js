@@ -7,6 +7,10 @@ class System extends Model {
   roles() {
     return this.hasMany("App/Models/Role");
   }
+
+  menus() {
+    return this.hasMany("App/Models/Menu");
+  }
 }
 
 module.exports = System;

@@ -119,7 +119,7 @@ class UserController {
     const user = await User.find(auth.user.id);
     if (!user) response.status(404).send({ message: "User not found" });
     else {
-      const { email, password, login, name } = request.all();
+      const { email, password, login, name, active } = request.all();
       console.log(email, password, login, name);
       // console.log(user.toJSON());
       // console.log(data);
@@ -127,12 +127,13 @@ class UserController {
       if (typeof password !== "undefined") user.password = password;
       if (typeof login !== "undefined") user.login = login;
       if (typeof name !== "undefined") user.name = name;
+      if (typeof active !== "undefined") user.active = active;
 
       //return user;
 
       // console.log(user.toJSON());
       await user.save();
-      response.send({ user });
+      response.send({ message: "User updated successfully", user });
     }
   }
 
@@ -182,13 +183,14 @@ class UserController {
    * Return user's roles.
    *
    */
-  async userRoles({ auth }) {
+  async userRoles({ auth, response }) {
     const user = await User.find(auth.user.id);
     // if (!user) return { message: "User not found" };
     if (!user) response.status(404).send({ message: "User not found" });
     else {
-      const user = await user.roles().fetch();
-      response.send(user);
+      // const userRoles = await user.roles().fetch();
+      await user.load("roles");
+      response.send({ user });
     }
 
     // return user.roles().fetch();
