@@ -172,12 +172,12 @@ class OrgaoController {
 
         const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
 
-        if (codigo) orgao.codigo = codigo;
-        if (sigla) orgao.sigla = sigla;
-        if (cnpj) orgao.cnpj = cnpj;
-        if (natureza) orgao.natureza = natureza;
-        if (ativo) orgao.ativo = ativo;
-        if (descricao) orgao.descricao = descricao;
+        if (typeof codigo !== "undefined") orgao.codigo = codigo;
+        if (typeof sigla !== "undefined") orgao.sigla = sigla;
+        if (typeof cnpj !== "undefined") orgao.cnpj = cnpj;
+        if (typeof natureza !== "undefined") orgao.natureza = natureza;
+        if (typeof ativo !== "undefined") orgao.ativo = ativo;
+        if (typeof descricao !== "undefined") orgao.descricao = descricao;
 
         await orgao.save();
         response.send({ message: "Orgao updated successfully", orgao });

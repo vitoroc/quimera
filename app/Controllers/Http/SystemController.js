@@ -116,10 +116,11 @@ class SystemController {
       const system = await System.find(params.id);
       if (!system) response.status(404).send({ message: "System not found" });
       const { name, description, active, url } = request.all();
-      if (name) system.name = name;
-      if (description) system.description = description;
-      if (active) system.active = active;
-      if (url) system.url = url;
+
+      if (typeof name !== "undefined") system.name = name;
+      if (typeof description !== "undefined") system.description = description;
+      if (typeof active !== "undefined") system.active = active;
+      if (typeof url !== "undefined") system.url = url;
 
       await system.save();
       response.send({ message: "System updated successfully", system });

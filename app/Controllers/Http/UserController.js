@@ -123,10 +123,10 @@ class UserController {
       console.log(email, password, login, name);
       // console.log(user.toJSON());
       // console.log(data);
-      if (email) user.email = email;
-      if (password) user.password = password;
-      if (login) user.login = login;
-      if (name) user.name = name;
+      if (typeof email !== "undefined") user.email = email;
+      if (typeof password !== "undefined") user.password = password;
+      if (typeof login !== "undefined") user.login = login;
+      if (typeof name !== "undefined") user.name = name;
 
       //return user;
 
