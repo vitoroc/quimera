@@ -98,11 +98,6 @@ class UserController {
     if (!allowed) response.unauthorized({ message: "User is not admin" });
     else if (!user) response.status(404).send({ message: "User not found" });
     else response.send({ user });
-
-    // const user = await User.find(params.id);
-    // if (!user) return { message: "User not found" };
-
-    // return user;
   }
 
   /**
@@ -115,9 +110,17 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ request, auth }) {
+  async update({ params, request, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
     const user = await User.find(auth.user.id);
-    if (!user) response.status(404).send({ message: "User not found" });
+    if (params.id !== auth.user.id && !allowed)
+      response
+        .status(409)
+        .send({
+          message:
+            "User id provided differs from authenticated or user dont have admin privileges"
+        });
+    else if (!user) response.status(404).send({ message: "User not found" });
     else {
       const { email, password, login, name, active } = request.all();
       console.log(email, password, login, name);
@@ -128,10 +131,6 @@ class UserController {
       if (typeof login !== "undefined") user.login = login;
       if (typeof name !== "undefined") user.name = name;
       if (typeof active !== "undefined") user.active = active;
-
-      //return user;
-
-      // console.log(user.toJSON());
       await user.save();
       response.send({ message: "User updated successfully", user });
     }
@@ -154,17 +153,10 @@ class UserController {
       const user = await User.find(params.id);
       if (!user) response.status(404).send({ message: "User not found" });
       else if (user.id === 1)
-        response.status(403).send({ message: "Admin cannot be invalidated" });
+        response.status(403).send({ message: "Admin cannot be deleted" });
       else {
-        if (user.valid == false)
-          response.send({ message: "User already invalidated" });
-        else {
-          user.valid = false;
-
-          await user.save();
-          console.log(user);
-          response.send({ message: "Usuario invalidated successfully" });
-        }
+        await user.delete();
+        response.send({ message: "User deleted successfully" });
       }
     }
 
