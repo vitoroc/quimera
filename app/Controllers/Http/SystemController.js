@@ -57,7 +57,7 @@ class SystemController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, auth }) {
+  async store({ request, auth, response }) {
     var allowed = await this.userIsAdmin({ auth });
     // if (!allowed) return { message: "User not allowed" };
     if (!allowed) response.unauthorized({ message: "User is not admin" });
@@ -148,9 +148,11 @@ class SystemController {
         response.status(403).send({ message: "Main system cannot be deleted" });
       else {
         const system = await System.find(params.id);
-        system.active = false;
-        await system.save();
-        response.send({ message: "System invalidated successfully", system });
+        if (!system) response.status(404).send({ message: "System not found" });
+        else {
+          await system.delete();
+          response.send({ message: "System deleted successfully" });
+        }
       }
     }
   }
