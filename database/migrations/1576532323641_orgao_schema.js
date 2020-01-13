@@ -23,11 +23,11 @@ class OrgaoSchema extends Schema {
         .string("descricao")
         .notNullable()
         .unique();
+      table.string("natureza").notNullable();
       table
-        .string("natureza")
+        .boolean("ativo")
         .notNullable()
-        .unique();
-      table.boolean("ativo").notNullable();
+        .default(false);
       table.timestamps();
     });
   }

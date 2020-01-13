@@ -52,11 +52,8 @@ class OrgaoController {
   async index({ auth, response }) {
     const allowed = await this.userIsAdmin({ auth });
     const orgaos = await Orgao.all();
-    // if (!allowed) return { message: "User not allowed" };
     if (!allowed) response.status(403).send({ message: "User not allowed" });
-    else response.send(orgaos);
-    // const orgaos = await Orgao.all();
-    // return orgaos;
+    else response.send({ orgaos });
   }
 
   /**
@@ -68,8 +65,15 @@ class OrgaoController {
    * @param {Response} ctx.response
    */
   async store({ request, auth, response }) {
+    // console.log(request.all());
+    // response.send({ request: request });
+
+    // return request;
+
+    // console.log(resquest.all());
+    // response.send({ message: "Test", request: request.all() });
+
     const allowed = await this.userIsAdmin({ auth });
-    // if (!allowed) return { message: "User not allowed" };
     if (!allowed) response.unauthorized({ message: "User not allowed" });
     else {
       const data = request.only([
@@ -84,17 +88,6 @@ class OrgaoController {
       const orgao = await Orgao.create(data);
       response.send({ message: "Orgao created successfully", orgao });
     }
-    // const data = request.only([
-    //   "codigo",
-    //   "cnpj",
-    //   "sigla",
-    //   "descricao",
-    //   "natureza",
-    //   "ativo"
-    // ]);
-
-    // const orgao = await Orgao.create(data);
-    // return { message: "Orgao created successfully", orgao };
   }
 
   /**
@@ -124,16 +117,6 @@ class OrgaoController {
         response.send({ orgao });
       }
     }
-    // const qntOrgao = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .getCount();
-
-    // if (qntOrgao === 0) return { message: "Orgao not found" };
-
-    // const orgao = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .fetch();
-    // return orgao;
   }
 
   /**
@@ -183,32 +166,6 @@ class OrgaoController {
         response.send({ message: "Orgao updated successfully", orgao });
       }
     }
-
-    // const { codigo, sigla, cnpj, natureza, ativo, descricao } = request.all();
-
-    // const countOrg = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .getCount();
-
-    // if (countOrg === 0) return { message: "Orgao not found" };
-
-    // const orgaoAux = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .fetch();
-
-    // console.log(orgaoAux.toJSON()[0].id);
-
-    // const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
-
-    // if (codigo) orgao.codigo = codigo;
-    // if (sigla) orgao.sigla = sigla;
-    // if (cnpj) orgao.cnpj = cnpj;
-    // if (natureza) orgao.natureza = natureza;
-    // if (ativo) orgao.ativo = ativo;
-    // if (descricao) orgao.descricao = descricao;
-
-    // await orgao.save();
-    // return orgao;
   }
 
   /**
@@ -235,29 +192,11 @@ class OrgaoController {
           .fetch();
 
         const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
+        await orgao.delete();
 
-        orgao.ativo = false;
-        await orgao.save();
-
-        response.send({ message: "Orgao invalidated successfully" });
+        response.send({ message: "Orgao deleted successfully" });
       }
     }
-    // const countOrg = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .getCount();
-
-    // if (countOrg === 0) return { message: "Orgao not found" };
-
-    // const orgaoAux = await Orgao.query()
-    //   .where("codigo", "=", params.codigo)
-    //   .fetch();
-
-    // const orgao = await Orgao.find(orgaoAux.toJSON()[0].id);
-
-    // orgao.ativo = false;
-    // await orgao.save();
-
-    // return { message: "Orgao invalidated successfully" };
   }
 }
 

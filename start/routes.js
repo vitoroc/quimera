@@ -45,4 +45,4 @@ Route.group(() => {
   Route.get("system-roles/:id", "SystemController.systemRoles");
 }).middleware(["auth"]);
 
-Route.get("/test", "OrgaoController.index").middleware(["auth"]);
+Route.get("/test", "AuthController.test").middleware(["auth"]);
