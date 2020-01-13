@@ -114,12 +114,10 @@ class UserController {
     var allowed = await this.userIsAdmin({ auth });
     const user = await User.find(auth.user.id);
     if (params.id !== auth.user.id && !allowed)
-      response
-        .status(409)
-        .send({
-          message:
-            "User id provided differs from authenticated or user dont have admin privileges"
-        });
+      response.status(409).send({
+        message:
+          "User id provided differs from authenticated or user dont have admin privileges"
+      });
     else if (!user) response.status(404).send({ message: "User not found" });
     else {
       const { email, password, login, name, active } = request.all();
@@ -186,6 +184,36 @@ class UserController {
     }
 
     // return user.roles().fetch();
+  }
+
+  /**
+   * Update user details.
+   * PUT or PATCH user/:id
+   * The user can only update his own atributes
+   * Email, password, login and name
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async updateUserAdmin({ params, request, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
+    const user = await User.find(params.id);
+    if (!allowed) response.unauthorized({ message: "User not allowed" });
+    else if (!user) response.status(404).send({ message: "User not found" });
+    else {
+      const { email, password, login, name, active } = request.all();
+      console.log(email, password, login, name);
+      // console.log(user.toJSON());
+      // console.log(data);
+      if (typeof email !== "undefined") user.email = email;
+      if (typeof password !== "undefined") user.password = password;
+      if (typeof login !== "undefined") user.login = login;
+      if (typeof name !== "undefined") user.name = name;
+      if (typeof active !== "undefined") user.active = active;
+      await user.save();
+      response.send({ message: "User updated successfully", user });
+    }
   }
 }
 

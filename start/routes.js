@@ -27,6 +27,8 @@ Route.post("/autenticate", "AuthController.autenticate");
 
 Route.group(() => {
   Route.resource("users", "UserController").apiOnly();
+
+  Route.put("admin/update_user/:id", "UserController.updateUserAdmin");
   // Route.resource("orgaos", "OrgaoController")
   //   .apiOnly()
   //   .except("show")
