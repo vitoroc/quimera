@@ -208,9 +208,9 @@ class UserController {
         login,
         name,
         active,
-        codigo_orgao
+        orgao_codigo
       } = request.all();
-      console.log(email, password, login, name);
+      // console.log(email, password, login, name);
       // console.log(user.toJSON());
       // console.log(data);
       if (typeof email !== "undefined") user.email = email;
