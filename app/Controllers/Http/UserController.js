@@ -202,7 +202,14 @@ class UserController {
     if (!allowed) response.unauthorized({ message: "User not allowed" });
     else if (!user) response.status(404).send({ message: "User not found" });
     else {
-      const { email, password, login, name, active } = request.all();
+      const {
+        email,
+        password,
+        login,
+        name,
+        active,
+        codigo_orgao
+      } = request.all();
       console.log(email, password, login, name);
       // console.log(user.toJSON());
       // console.log(data);
@@ -211,6 +218,7 @@ class UserController {
       if (typeof login !== "undefined") user.login = login;
       if (typeof name !== "undefined") user.name = name;
       if (typeof active !== "undefined") user.active = active;
+      if (typeof codigo_orgao !== "undefined") user.codigo_orgao = codigo_orgao;
       await user.save();
       response.send({ message: "User updated successfully", user });
     }
