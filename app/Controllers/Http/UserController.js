@@ -218,7 +218,7 @@ class UserController {
       if (typeof login !== "undefined") user.login = login;
       if (typeof name !== "undefined") user.name = name;
       if (typeof active !== "undefined") user.active = active;
-      if (typeof codigo_orgao !== "undefined") user.codigo_orgao = codigo_orgao;
+      if (typeof orgao_codigo !== "undefined") user.orgao_codigo = orgao_codigo;
       await user.save();
       response.send({ message: "User updated successfully", user });
     }
