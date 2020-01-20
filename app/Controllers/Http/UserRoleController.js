@@ -69,7 +69,7 @@ class UserRoleController {
     const allowed = await this.userIsAdmin({ auth });
     if (!allowed) response.unauthorized({ message: "User not allowed" });
     else {
-      const data = request.only(["role_id", "user_id"]);
+      const data = request.only(["role_id", "user_id", "active"]);
       const userrole = await UserRole.create(data);
       response.send({ message: "UserRole created successfully", userrole });
     }
@@ -107,9 +107,10 @@ class UserRoleController {
       if (!userrole)
         response.status(404).send({ message: "UserRole not found" });
       else {
-        const { user_id, role_id } = await request.all();
+        const { user_id, role_id, active } = await request.all();
         if (typeof user_id !== "undefined") userrole.user_id = user_id;
-        if (typeof role_id !== "undefined") userrole.system_id = system_id;
+        if (typeof role_id !== "undefined") userrole.role_id = role_id;
+        if (typeof active !== "undefined") userrole.active = active;
 
         await userrole.save();
         response.send({ message: "UserRole updated successfully", userrole });
