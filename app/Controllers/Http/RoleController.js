@@ -84,14 +84,10 @@ class RoleController {
    */
   async show({ params, request, response, auth }) {
     var allowed = await this.userIsAdmin({ auth });
+    const role = await Role.find(params.id);
     // if (!allowed) return { message: "User not allowed" };
     if (!allowed) response.unauthorized({ message: "User is not admin" });
-    else {
-      const data = request.only(["system_id", "name", "description", "active"]);
-      const role = await Role.create(data);
-
-      response.send({ message: "Role created successfully", role });
-    }
+    else response.send({ role });
   }
 
   /**
@@ -107,12 +103,13 @@ class RoleController {
     // if (!allowed) return { message: "User not allowed" };
     if (!allowed) response.unauthorized({ message: "User is not admin" });
     else {
-      const { name, description, active } = request.all();
+      const { name, description, active, system_id } = request.all();
       const role = await Role.find(params.id);
 
       if (typeof name !== "undefined") role.name = name;
-      if (typeof description !== "undefined") role.description = name;
-      if (typeof active !== "undefined") role.active = name;
+      if (typeof description !== "undefined") role.description = description;
+      if (typeof active !== "undefined") role.active = active;
+      if (typeof system_id !== "undefined") role.system_id = system_id;
 
       await role.save();
 
@@ -134,7 +131,7 @@ class RoleController {
     if (!allowed) response.unauthorized({ message: "User is not admin" });
     else {
       const role = await Role.find(params.id);
-      if (!role) response.status(404).send({ message: "System not found" });
+      if (!role) response.status(404).send({ message: "Role not found" });
       else {
         role.active = false;
         await role.delete();
