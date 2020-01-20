@@ -11,6 +11,10 @@ class Role extends Model {
   userRole() {
     this.hasMany("App/Models/UserRole");
   }
+
+  roleMenu() {
+    this.hasMany("App/Models/RoleMenu");
+  }
 }
 
 module.exports = Role;

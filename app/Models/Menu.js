@@ -4,7 +4,7 @@
 const Model = use("Model");
 
 class Menu extends Model {
-  role() {
+  system() {
     return this.belongsTo("App/Models/System");
   }
 }
