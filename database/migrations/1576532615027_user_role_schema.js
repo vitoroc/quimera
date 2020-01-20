@@ -23,7 +23,7 @@ class UserRoleSchema extends Schema {
         .inTable("roles")
         .onUpdate("CASCADE")
         .onDelete("CASCADE");
-      table.boolean("active");
+      table.boolean("active").notNullable();
       table.timestamps();
     });
   }
