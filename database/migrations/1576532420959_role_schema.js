@@ -15,12 +15,9 @@ class RoleSchema extends Schema {
         .inTable("systems")
         .onUpdate("CASCADE")
         .onDelete("CASCADE");
-      table
-        .string("name")
-        .notNullable()
-        .unique();
-      table.string("description");
-      table.boolean("active");
+      table.string("name").notNullable();
+      table.string("description").notNullable();
+      table.boolean("active").notNullable();
       table.timestamps();
     });
   }
