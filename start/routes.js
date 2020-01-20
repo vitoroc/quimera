@@ -42,6 +42,7 @@ Route.group(() => {
 
   Route.resource("systems", "SystemController").apiOnly();
   Route.resource("roles", "RoleController").apiOnly();
+  Route.resource("userroles", "UserRoleController").apiOnly();
 
   Route.get("user-info", "UserController.userRoles");
   Route.get("system-roles/:id", "SystemController.systemRoles");
