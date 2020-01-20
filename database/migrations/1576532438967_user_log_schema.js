@@ -15,7 +15,7 @@ class UserLogSchema extends Schema {
         .inTable("users")
         .onUpdate("RESTRICT")
         .onDelete("RESTRICT");
-      table.string("text");
+      table.string("text").notNullable();
       table.timestamps();
     });
   }
