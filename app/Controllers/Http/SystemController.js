@@ -6,6 +6,7 @@
 
 const System = use("App/Models/System");
 const User = use("App/Models/User");
+const Role = use("App/Models/Role");
 
 /**
  * Resourceful controller for interacting with systems
@@ -154,6 +155,25 @@ class SystemController {
           response.send({ message: "System deleted successfully" });
         }
       }
+    }
+  }
+
+  /**
+   * Return a list of roles
+   * GET system-roles/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async systemRoles({ params, auth, response }) {
+    var allowed = await this.userIsAdmin({ auth });
+    if (!allowed) response.unauthorized({ message: "User is not admin" });
+    else {
+      const roles = await Role.query()
+        .where("system_id", "=", params.id)
+        .fetch();
+      response.send({ roles });
     }
   }
 }
