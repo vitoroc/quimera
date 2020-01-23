@@ -157,16 +157,6 @@ class UserController {
         response.send({ message: "User deleted successfully" });
       }
     }
-
-    // const user = await User.find(params.id);
-    // if (!user) return { message: "User not found" };
-    // if (user.id === 1) return { message: "Admin cannot be invalidated" };
-
-    // user.valid = false;
-
-    // await user.save();
-    // console.log(user);
-    // return { message: "Usuario invalidated successfully" };
   }
 
   /**
@@ -222,6 +212,22 @@ class UserController {
       await user.save();
       response.send({ message: "User updated successfully", user });
     }
+  }
+
+  async userSystems({ auth, response }) {
+    const user = await User.find(auth.user.id);
+    await user.load("roles");
+    const roles = user.toJSON().roles;
+    const sys_ids = roles.map(el => {
+      return el.system_id;
+    });
+    const sys_ids_filtered = sys_ids.filter(
+      (el, i) => sys_ids.indexOf(el) === i
+    );
+    const systems = await System.query()
+      .whereIn("id", sys_ids_filtered)
+      .fetch();
+    response.send({ systems });
   }
 }
 
