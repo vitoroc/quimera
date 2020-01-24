@@ -11,6 +11,10 @@ class System extends Model {
   menus() {
     return this.hasMany("App/Models/Menu");
   }
+
+  params() {
+    return this.hasMany("App/Model/Param");
+  }
 }
 
 module.exports = System;

@@ -4,7 +4,7 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const UserController = require("./UserController");
+// const UserController = require("./UserController");
 const User = use("App/Models/User");
 const System = use("App/Models/System");
 const Orgao = use("App/Models/Orgao");
