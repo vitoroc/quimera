@@ -46,7 +46,6 @@ Route.group(() => {
   Route.resource("menus", "MenuController").apiOnly();
 
   Route.get("user-info", "UserController.userRoles");
-  Route.get("system-roles/:id", "SystemController.systemRoles");
   Route.get("user-systems", "UserController.userSystems");
 }).middleware(["auth"]);
 

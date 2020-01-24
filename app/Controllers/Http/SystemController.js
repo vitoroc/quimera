@@ -85,7 +85,8 @@ class SystemController {
    * @param {View} ctx.view
    */
   async show({ params, auth, response }) {
-    var allowed = await this.userIsAdmin({ auth });
+    // var allowed = await this.userIsAdmin({ auth });
+    var allowed = true;
     if (!allowed) response.unauthorized({ message: "User is not admin" });
     else {
       const system = await System.find(params.id);
@@ -155,25 +156,6 @@ class SystemController {
           response.send({ message: "System deleted successfully" });
         }
       }
-    }
-  }
-
-  /**
-   * Return a list of roles
-   * GET system-roles/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async systemRoles({ params, auth, response }) {
-    var allowed = await this.userIsAdmin({ auth });
-    if (!allowed) response.unauthorized({ message: "User is not admin" });
-    else {
-      const roles = await Role.query()
-        .where("system_id", "=", params.id)
-        .fetch();
-      response.send({ roles });
     }
   }
 }
