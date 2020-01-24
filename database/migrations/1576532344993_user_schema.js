@@ -12,10 +12,7 @@ class UserSchema extends Schema {
         .notNullable()
         .references("codigo")
         .inTable("orgaos");
-      table
-        .string("login", 80)
-        .notNullable()
-        .unique();
+      table.string("login", 80).unique();
       table.string("name", 100).notNullable();
       table
         .string("email", 254)
