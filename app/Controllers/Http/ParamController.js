@@ -66,7 +66,7 @@ class ParamController {
     const allowed = await this.userIsAdmin({ auth });
     if (!allowed) response.unauthorized({ message: "Usuário não autorizado" });
     else {
-      const data = request.only(["system_id", "name", "value"]);
+      const data = request.only(["system_id", "name", "value", "active"]);
       const param = await Param.create(data);
       response.send({ message: "Parâmetro criado com sucesso", param });
     }
