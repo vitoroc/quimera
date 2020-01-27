@@ -109,10 +109,17 @@ class ParamController {
       if (!param)
         response.status(404).send({ message: "Parâmetro não encontrado" });
       else {
-        const { system_id, name, value, deleted_at } = await request.all();
+        const {
+          system_id,
+          name,
+          value,
+          deleted_at,
+          active
+        } = await request.all();
         if (typeof system_id !== "undefined") param.system_id = system_id;
         if (typeof name !== "undefined") param.name = name;
         if (typeof value !== "undefined") param.value = value;
+        if (typeof active !== "undefined") param.active = active;
         if (typeof deleted_at !== "undefined") param.deleted_at = deleted_at;
 
         await param.save();
