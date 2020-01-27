@@ -92,7 +92,7 @@ class SystemController {
       const system = await System.find(params.id);
       if (!system) response.status(404).send({ message: "System not found" });
       else {
-        await system.load("roles");
+        await system.loadMany(["roles", "menus"]);
         response.send({ system });
       }
     }
