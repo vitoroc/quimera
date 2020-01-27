@@ -17,6 +17,7 @@ class ParamSchema extends Schema {
         .onDelete("CASCADE");
       table.string("name", 254).notNullable();
       table.string("value", 254).notNullable();
+      table.timestamp("deleted_at").nullable();
       table.timestamps();
     });
   }

@@ -20,10 +20,10 @@ class SystemSeeder {
   async run() {
     await System.create({
       id: 1,
-      name: "API Autenticação",
-      description: "API de autenticação para os sistemas da SETC",
+      name: "Central SETC",
+      description: "Central para os sistemas da SETC",
       active: true,
-      url: "http://172.22.21.120:3333"
+      url: "http://172.22.21.120:3000"
     });
   }
 }

@@ -109,10 +109,11 @@ class ParamController {
       if (!param)
         response.status(404).send({ message: "Parâmetro não encontrado" });
       else {
-        const { system_id, name, value } = await request.all();
+        const { system_id, name, value, deleted_at } = await request.all();
         if (typeof system_id !== "undefined") param.system_id = system_id;
         if (typeof name !== "undefined") param.name = name;
         if (typeof value !== "undefined") param.value = value;
+        if (typeof deleted_at !== "undefined") param.deleted_at = deleted_at;
 
         await param.save();
         response.send({ message: "Parâmetro atualizado com sucesso", param });
@@ -136,8 +137,14 @@ class ParamController {
       if (!param)
         response.status(404).send({ message: "Parâmetro não encontrado" });
       else {
-        await param.delete();
-        response.send({ message: "Parâmetro deletado com sucesso" });
+        if (param.id === 1)
+          response
+            .status(403)
+            .send({ message: "Parâmetro não pode ser deletado" });
+        else {
+          await param.delete();
+          response.send({ message: "Parâmetro deletado com sucesso" });
+        }
       }
     }
   }
