@@ -108,9 +108,9 @@ class MenuController {
       if (!menu) response.status(404).send({ message: "Menu não encontrado" });
       else {
         const { system_id, name, description, active } = await request.all();
-        if (typeof system_id !== "undefined") menu.user_id = system_id;
-        if (typeof name !== "undefined") menu.role_id = name;
-        if (typeof description !== "undefined") menu.active = description;
+        if (typeof system_id !== "undefined") menu.system_id = system_id;
+        if (typeof name !== "undefined") menu.name = name;
+        if (typeof description !== "undefined") menu.description = description;
         if (typeof active !== "undefined") menu.active = active;
 
         await menu.save();
